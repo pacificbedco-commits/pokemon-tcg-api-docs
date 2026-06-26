@@ -18,10 +18,10 @@ jobs:
     - name: Build
       run: yarn build
     - name: Skip deploy when AWS secrets are missing
-      if: secrets.AWS_S3_BUCKET == '' || secrets.AWS_ACCESS_KEY_ID == '' || secrets.AWS_SECRET_ACCESS_KEY == ''
+      if: ${{ !secrets.AWS_S3_BUCKET || !secrets.AWS_ACCESS_KEY_ID || !secrets.AWS_SECRET_ACCESS_KEY }}
       run: echo "Skipping S3 deploy because the required AWS secrets are not configured."
     - uses: jakejarvis/s3-sync-action@master
-      if: secrets.AWS_S3_BUCKET != '' && secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != ''
+      if: ${{ secrets.AWS_S3_BUCKET && secrets.AWS_ACCESS_KEY_ID && secrets.AWS_SECRET_ACCESS_KEY }}
       with:
         args: --acl public-read --follow-symlinks --delete
       env:
